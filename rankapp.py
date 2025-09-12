@@ -8,8 +8,8 @@ from io import BytesIO
 # 🧠 Configurar moeda brasileira
 try:
     locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
-except:
-    locale.setlocale(locale.LC_ALL, 'Portuguese_Brazil.1252')
+except locale.Error:
+    locale.setlocale(locale.LC_ALL, '')  # fallback para o padrão do sistema
 
 # 🔧 Função para limpar valores monetários
 def limpar_valor(valor):
