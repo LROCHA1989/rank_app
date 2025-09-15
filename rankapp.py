@@ -26,7 +26,7 @@ if "dados_vendas" not in st.session_state:
 
 # 🎛️ Menu lateral
 opcao = st.sidebar.radio("📌 NAVEGAÇÃO!", [
-    "📤 Carregamento Automático",
+    "📤 Google Sheets",
     "📊 Venda Geral",
     "🏆 Classificação Geral",
     "📈 Análise de Variação Anual"
