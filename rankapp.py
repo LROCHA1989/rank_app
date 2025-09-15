@@ -34,7 +34,7 @@ opcao = st.sidebar.radio("📌 NAVEGAÇÃO!", [
 
 # ID da planilha
 if opcao == "📤 Google Sheets":
-    st.title("📤 Carregando dados do Google Sheets")
+    #st.title("📤 Carregando dados do Google Sheets")
 
     sheet_id = "1n4C3ideu-g-xzVBJIdkyPo-8ewGH3wU1"
     url_vendas = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet=VENDAS"
