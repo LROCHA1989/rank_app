@@ -449,11 +449,12 @@ elif opcao == "📈 Análise de Variação Anual":
         comparativo_styled = (
         comparativo.style
         .format({
-            "2024": "R$ {:,.2f}",
-            "2025": "R$ {:,.2f}",
-            "TOTAL GERAL": "R$ {:,.2f}",
-            "VARIAÇÃO (%)": "{:.2f}%"
+            "2024": lambda x: f"R$ {x:,.2f}".replace(",", "v").replace(".", ",").replace("v", "."),
+            "2025": lambda x: f"R$ {x:,.2f}".replace(",", "v").replace(".", ",").replace("v", "."),
+            "TOTAL GERAL": lambda x: f"R$ {x:,.2f}".replace(",", "v").replace(".", ",").replace("v", "."),
+            "VARIAÇÃO (%)": lambda x: f"{x:.2f}%"
         })
+
         .apply(destacar_total, axis=1)
         .applymap(destacar_variacao, subset=["VARIAÇÃO (%)"])
         .set_table_styles([
@@ -488,4 +489,3 @@ elif opcao == "📈 Análise de Variação Anual":
         """
         st.subheader("🗣️ Narrativa de Desempenho Anual")
         st.markdown(narrativa_html, unsafe_allow_html=True)
-
