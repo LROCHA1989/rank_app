@@ -33,7 +33,6 @@ opcao = st.sidebar.radio("📌 NAVEGAÇÃO!", [
 ])
 
 # 📤 Upload de Arquivo
-# 📤 Upload de Arquivo
 if opcao == "📤 Upload de Arquivo":
     st.title("📤 Upload de Arquivo Excel")
     st.write("Envie um arquivo `.xlsx` com as abas `VENDAS` e `PONTOS_EXTRAS`.")
@@ -150,13 +149,15 @@ elif opcao == "📊 Venda Geral":
         tabela_final = pd.concat([tabela_ordenada, linha_total])
 
         # Estilo visual
+        # Estilo visual
         def destacar_total(val):
             return ["font-weight: bold; background-color: #f0f0f0" if val.name == "TOTAL POR MÊS" else "" for _ in val]
 
+        # ✅ Formatação manual de moeda brasileira
         tabela_formatada = (
             tabela_final.style
-            .format(lambda x: locale.currency(x, grouping=True))
-            .apply(destacar_total, axis=1)
+            .format(lambda x: f"R$ {x:,.2f}".replace(",", "v").replace(".", ",").replace("v", ".") if isinstance(x, (int, float)) else x)
+           # .apply(destacar_total, axis=1)
         )
 
         st.subheader(f"📋 Vendas por Mês - Ano {ano_selecionado}")
