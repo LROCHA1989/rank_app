@@ -26,71 +26,39 @@ if "dados_vendas" not in st.session_state:
 
 # 🎛️ Menu lateral
 opcao = st.sidebar.radio("📌 NAVEGAÇÃO!", [
-    "📤 Upload de Arquivo",
+    "📤 Carregamento Automático",
     "📊 Venda Geral",
     "🏆 Classificação Geral",
     "📈 Análise de Variação Anual"
 ])
 
-# 📤 Upload de Arquivo
-if opcao == "📤 Upload de Arquivo":
-    st.title("📤 Upload de Arquivo Excel")
-    st.write("Envie um arquivo `.xlsx` com as abas `VENDAS` e `PONTOS_EXTRAS`.")
+# ID da planilha
+if opcao == "📤 Carregamento Automático":
+    st.title("📤 Carregando dados do Google Sheets")
 
-    arquivo = st.file_uploader("Selecione o arquivo Excel", type=["xlsx"], key="upload")
+    sheet_id = "1n4C3ideu-g-xzVBJIdkyPo-8ewGH3wU1"
+    url_vendas = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet=VENDAS"
+    url_pontos = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet=PONTOS_EXTRAS"
 
-    if arquivo:
-        try:
-            xls = pd.ExcelFile(arquivo)
+    try:
+        df = pd.read_csv(url_vendas)
+        pontos = pd.read_csv(url_pontos)
 
-            # 🟢 Ler aba de vendas
-            df = pd.read_excel(xls, sheet_name="VENDAS")
+        st.session_state["dados_vendas"] = df.copy()
+        st.session_state["pontos_extras"] = pontos.copy()
 
-            # 🟢 Ler aba de pontos extras (se existir)
-            if "PONTOS_EXTRAS" in xls.sheet_names:
-                pontos = pd.read_excel(xls, sheet_name="PONTOS_EXTRAS")
-            else:
-                pontos = pd.DataFrame(columns=["REP.", "MÊS", "AÇÃO", "PROMOÇÃO", "INADIMPLÊNCIA"])
+        st.success("✅ Dados carregados diretamente do Google Sheets!")
 
-            # Padronizar e limpar colunas de vendas
-            df["MÊS"] = df["MÊS"].astype(str).str.upper().str.strip().str.replace(".", "", regex=False)
-            meses_corretos = {
-                "JAN": "JAN", "FEV": "FEV", "MAR": "MAR", "ABR": "ABR", "MAI": "MAI", "JUN": "JUN",
-                "JUL": "JUL", "AGO": "AGO", "SET": "SET", "OUT": "OUT", "NOV": "NOV", "DEZ": "DEZ",
-                "VEF": "FEV", "DEFINIR": "SET", "ATRAS": "AGO", "FEB": "FEV", "SEPT": "SET", "SEP": "SET", "DEC": "DEZ",
-                "JANEIRO": "JAN", "FEVEREIRO": "FEV", "MARÇO": "MAR", "ABRIL": "ABR", "MAIO": "MAI",
-                "JUNHO": "JUN", "JULHO": "JUL", "AGOSTO": "AGO", "SETEMBRO": "SET", "OUTUBRO": "OUT",
-                "NOVEMBRO": "NOV", "DEZEMBRO": "DEZ"
-            }
-            df["MÊS"] = df["MÊS"].map(meses_corretos).fillna(df["MÊS"])
-            df["REP."] = df["REP."].astype(str).str.upper().str.strip()
-            df["EMPRESA"] = df["EMPRESA"].astype(str).str.upper().str.strip()
-            df["ANO"] = pd.to_numeric(df["ANO"], errors="coerce", downcast="integer")
-            df["SUBTOTAL"] = df["SUBTOTAL"].apply(limpar_valor)
-
-            # Padronizar pontos extras
-            pontos["REP."] = pontos["REP."].astype(str).str.upper().str.strip()
-            pontos["MÊS"] = pontos["MÊS"].astype(str).str.upper().str.strip()
-            pontos["AÇÃO"] = pd.to_numeric(pontos["AÇÃO"], errors="coerce").fillna(0).astype(int)
-            pontos["PROMOÇÃO"] = pd.to_numeric(pontos["PROMOÇÃO"], errors="coerce").fillna(0).astype(int)
-            pontos["INADIMPLÊNCIA"] = pd.to_numeric(pontos["INADIMPLÊNCIA"], errors="coerce").fillna(0).astype(int)
-
-            # Salvar nas variáveis de sessão
-            st.session_state["dados_vendas"] = df.copy()
-            st.session_state["pontos_extras"] = pontos.copy()
-
-            st.success("Arquivo carregado com sucesso!")
-
-        except Exception as e:
-            st.error(f"Erro ao processar o arquivo: {e}")
+    except Exception as e:
+        st.error(f"❌ Erro ao carregar dados do Google Sheets: {e}")
 
     # Exibir dados carregados e botão de limpar
     if not st.session_state["dados_vendas"].empty:
-        if st.button("🗑️ Limpar dados carregados"):
-            st.session_state["dados_vendas"] = pd.DataFrame()
-            st.session_state["pontos_extras"] = pd.DataFrame(columns=["REP.", "MÊS", "AÇÃO", "PROMOÇÃO", "INADIMPLÊNCIA"])
-            st.success("Dados removidos com sucesso!")
-            st.stop()
+        #if st.button("🗑️ Limpar dados carregados"):
+            #st.session_state["dados_vendas"] = pd.DataFrame()
+            #st.session_state["pontos_extras"] = pd.DataFrame(columns=["REP.", "MÊS", "AÇÃO", "PROMOÇÃO", "INADIMPLÊNCIA"])
+            #st.success("Dados removidos com sucesso!")
+            #st.stop()
 
         with st.expander("📄 Visualizar dados carregados"):
             st.dataframe(st.session_state["dados_vendas"][["REP.", "SUBTOTAL", "MÊS", "EMPRESA", "ANO"]])
