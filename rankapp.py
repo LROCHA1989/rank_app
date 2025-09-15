@@ -33,7 +33,7 @@ opcao = st.sidebar.radio("📌 NAVEGAÇÃO!", [
 ])
 
 # ID da planilha
-if opcao == "📤 Carregamento Automático":
+if opcao == "📤 Google Sheets":
     st.title("📤 Carregando dados do Google Sheets")
 
     sheet_id = "1n4C3ideu-g-xzVBJIdkyPo-8ewGH3wU1"
